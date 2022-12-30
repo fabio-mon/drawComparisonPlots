@@ -88,13 +88,13 @@ inputs=settings.inputs
 variables=settings.variables
 
 # define histograms
-print "Define histograms"
+print ("Define histograms")
 histos = {}
 for inputname, inputcontent in inputs.items():
-    print "> doing input ",inputname
+    print ("> doing input "+inputname)
     histos[inputname] = {}
     for variablename, variablesettings in variables.items():
-        print ">> doing variable ",variablename
+        print (">> doing variable "+variablename)
         histos[inputname][variablename] = r.TH1F(
             inputname+"_"+variablename,
             inputname+"_"+variablename,
@@ -103,26 +103,26 @@ for inputname, inputcontent in inputs.items():
             variablesettings["xmax"]
         )
         
-print "Fill histograms"
+print ("Fill histograms")
 for inputname, inputcontent in inputs.items():
-    print "> doing input ",inputname
+    print ("> doing input "+inputname)
     for filelumi in inputcontent["filelumis"]:
         filename = filelumi[0]
         objname = filelumi[1]
         lumi = filelumi[2]
-        print ">> doing file ",filename+"/"+objname 
+        print (">> doing file "+filename+"/"+objname) 
         ch = r.TChain()
         ch.Add(filename+"/"+objname)
 
         for variablename, variablesettings in variables.items():
-            print ">>> doing variable ",variablename
+            print (">>> doing variable "+variablename)
             Nev = ch.Draw( variablesettings["formula"]+">>+"+inputname+"_"+variablename, inputcontent["weight"]+"*"+str(lumi) , "goff" )
-            print ">>> draw ",Nev," events"
-            print ">>> number of entries ",histos[inputname][variablename].GetEntries()
+            print (">>> draw %i events"%Nev)
+            print (">>> number of entries %i"%histos[inputname][variablename].GetEntries())
 
 
 
-print "Draw histograms"
+print ("Draw histograms")
 histostacks = {}
 histosums = {}
 
@@ -237,7 +237,7 @@ for variablename, variablesettings in variables.items():
     c.SaveAs(options.outdir+"/c_"+variablename+".root")
 
     if variablesettings["ymin"]<=0:
-        print "[WARNING]: ymin<=0 for variable %s --> cannot draw logarithmic plot"%variablename
+        print ("[WARNING]: ymin<=0 for variable %s --> cannot draw logarithmic plot"%variablename)
     else:
         c.SetLogy()
         c.Print(options.outdir+"/c_log_"+variablename+".pdf")
